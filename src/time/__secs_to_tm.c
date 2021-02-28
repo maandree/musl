@@ -40,15 +40,21 @@ int __secs_to_tm(long long t, struct tm *tm)
 	}
 
 	c_cycles = remdays / DAYS_PER_100Y;
-	if (c_cycles == 4) c_cycles--;
-	remdays -= c_cycles * DAYS_PER_100Y;
+	remdays %= DAYS_PER_100Y;
+	if (c_cycles == 4) {
+		remdays += DAYS_PER_100Y;
+		c_cycles--;
+	}
 
 	q_cycles = remdays / DAYS_PER_4Y;
-	remdays -= q_cycles * DAYS_PER_4Y;
+	remdays %= DAYS_PER_4Y;
 
 	remyears = remdays / 365;
-	if (remyears == 4) remyears--;
-	remdays -= remyears * 365;
+	remdays %= 365;
+	if (remyears == 4) {
+		remdays += 365;
+		remyears--;
+	}
 
 	leap = !remyears && (q_cycles || !c_cycles);
 	yday = remdays + 31 + 28 + leap;
